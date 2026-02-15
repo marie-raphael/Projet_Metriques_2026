@@ -1,15 +1,14 @@
-from flask import Flask, render_template_string, render_template, jsonify
-from flask import render_template
-from flask import json
-from datetime import datetime
-from urllib.request import urlopen
-import sqlite3
-                                                                                                                                       
-app = Flask(__name__)                                                                                                                  
-                                                                                                                                       
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
 @app.route('/')
 def hello_world():
     return render_template('hello.html')
-  
+
+@app.get("/health")
+def health():
+    return jsonify(status="ok")
+    
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(host="0.0.0.0", port=5000, debug=True)
