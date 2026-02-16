@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Humidité à Versailles — Atelier</title>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <style>
+    body { 
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+      margin: 24px; 
+      text-align: center;
+    }
+    #chart { 
+      width: 400px; 
+      height: 400px; 
+      margin: auto; 
+    }
+    #status { 
+      margin-top: 12px; 
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Atelier — Humidité horaire à Versailles</h1>
+  <div id="chart"></div>
+  <div id="status"></div>
+
+  <script>
+    // Charger le package Gauge de Google Charts
+    google.charts.load('current', { packages: ['gauge'] });
+    google.charts.setOnLoadCallback(init);
+
+    async function init() {
+      try {
+        const data = await fetchHumiditeVersailles();
+        drawChart(data);
+      } catch (err) {
+        document.getElementById('status').textContent = "Erreur: " + (err.message || err);
+      }
+    }
+
+    // Fonction pour récupérer les données depuis Flask
+    async function fetchHumiditeVersailles() {
+      const res = await fetch("/humidite"); // route Flask qui fournit l'humidité
+      if (!res.ok) throw new Error("Erreur fetch /humidite");
+      return await res.json(); // renvoie {current_humidity: valeur}
+    }
+
+    // Fonction pour dessiner le graphique
+    function drawChart(obj) {
+      const data = google.visualization.arrayToDataTable([
+        ['Label', 'Value'],
+        ['Humidité', obj.current_humidity],
+      ]);
+
+      const options = {
+        width: 400, 
+        height: 400,
+        redFrom: 80, redTo: 100,
+        yellowFrom: 50, yellowTo: 80,
+        minorTicks: 5,
+        max: 100
+      };
+
+      const chart = new google.visualization.Gauge(document.getElementById('chart'));
+      chart.draw(data, options);
+
+      document.getElementById('status').textContent = `Humidité actuelle à Versailles : ${obj.current_humidity}%`;
+    }
+  </script>
+</body>
+</html>

@@ -40,6 +40,10 @@ def mongraphique():
 def demographique():
     return render_template("graphique2.html")
 
+@app.route("/atelier")
+def atelier():
+    return render_template("atelier.html")
+
 
 
 
