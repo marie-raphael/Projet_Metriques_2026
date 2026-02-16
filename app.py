@@ -40,6 +40,29 @@ def mongraphique():
 def demographique():
     return render_template("graphique2.html")
 
+@app.get("/humidite")
+def humidite_versailles():
+
+    # Coordonnées de Versailles
+    url = (
+        "https://api.open-meteo.com/v1/forecast"
+        "?latitude=48.8049"
+        "&longitude=2.1204"
+        "&hourly=relativehumidity_2m"
+    )
+
+    response = requests.get(url)
+    data = response.json()
+
+    humidities = data.get("hourly", {}).get("relativehumidity_2m", [])
+
+    # On prend la dernière valeur disponible
+    current_humidity = humidities[-1] if humidities else 0
+
+    return jsonify({
+        "current_humidity": current_humidity
+    })
+
 @app.route("/atelier")
 def atelier():
     return render_template("atelier.html")
